@@ -1,0 +1,18 @@
+<div class="container">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>Plan de Puntos - Notas de Crédito</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <div class="actions-container">
+                <button mat-raised-button color="primary" (click)="abrirModal()">
+                    <mat-icon>add</mat-icon>
+                    Agregar Nota de Crédito
+                </button>
+            </div>
+
+            <app-nota-credito-tabla [items]="items" (itemEliminado)="onItemEliminado($event)"
+                (enviarNotas)="onEnviarNotas()" (itemAEditar)="onItemAEditar($event)" />
+        </mat-card-content>
+    </mat-card>
+</div>

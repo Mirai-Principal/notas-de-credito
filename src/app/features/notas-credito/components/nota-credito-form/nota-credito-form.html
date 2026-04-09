@@ -1,0 +1,90 @@
+<form [formGroup]="formulario" (ngSubmit)="agregarItem()" class="form-container">
+    <!-- Buscador de Cliente -->
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Cliente</mat-label>
+        <input type="text" matInput formControlName="clienteBusqueda" [matAutocomplete]="autoCliente"
+            placeholder="Buscar por nombre">
+        <mat-icon matPrefix>search</mat-icon>
+        @if (formulario.get('clienteBusqueda')?.hasError('required') && formulario.get('clienteBusqueda')?.touched) {
+        <mat-error>El cliente es requerido</mat-error>
+        }
+        <mat-autocomplete #autoCliente="matAutocomplete" [displayWith]="displayCliente"
+            (optionSelected)="onClienteSeleccionado($event.option.value)">
+            @for (cliente of clientesFiltrados(); track cliente.Ruc) {
+            <mat-option [value]="cliente">
+                <div class="cliente-option">
+                    <span class="cliente-nombre">{{ obtenerNombreCorto(cliente.Nombre) }}</span>
+                    <span class="cliente-ruc">{{ cliente.Ruc }}</span>
+                </div>
+            </mat-option>
+            }
+        </mat-autocomplete>
+    </mat-form-field>
+
+    @if (clienteSeleccionado()) {
+    <div class="cliente-seleccionado">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{ obtenerNombreCorto(clienteSeleccionado()!.Nombre) }} - {{ clienteSeleccionado()!.Ruc }}</span>
+    </div>
+    }
+
+    <!-- Número de Factura -->
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nro. Factura</mat-label>
+        <input matInput formControlName="nroFactura" placeholder="Ej: 001-001-000123456">
+        <mat-icon matPrefix>receipt</mat-icon>
+        @if (formulario.get('nroFactura')?.hasError('pattern') && formulario.get('nroFactura')?.touched) {
+        <mat-error>Formato inválido (Ej: 001-001-000123456)</mat-error>
+        }
+    </mat-form-field>
+
+    <!-- Monto Factura -->
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Monto Factura</mat-label>
+        <input matInput type="number" formControlName="montoFactura" placeholder="0.00" step="0.01" min="0" 
+               (input)="limitarDecimales($event)">
+        <span matPrefix style="margin: 0 4px 0 4px;">$</span>
+        @if (formulario.get('montoFactura')?.hasError('required') && formulario.get('montoFactura')?.touched) {
+        <mat-error>El monto es requerido</mat-error>
+        }
+        @if (formulario.get('montoFactura')?.hasError('min') && formulario.get('montoFactura')?.touched) {
+        <mat-error>El monto debe ser mayor a 0</mat-error>
+        }
+        @if (formulario.get('montoFactura')?.hasError('maxDecimals') && formulario.get('montoFactura')?.touched) {
+        <mat-error>Máximo 2 decimales permitidos</mat-error>
+        }
+    </mat-form-field>
+
+    <!-- Fecha Factura -->
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Fecha Factura</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="fechaFactura" placeholder="mm/dd/yyyy" [max]="today()">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        @if (formulario.get('fechaFactura')?.hasError('required') && formulario.get('fechaFactura')?.touched) {
+        <mat-error>La fecha es requerida</mat-error>
+        }
+    </mat-form-field>
+
+    <!-- Puntos Equivalentes (Solo lectura) -->
+    <mat-form-field appearance="outline" class="full-width puntos-field">
+        <mat-label>Puntos Equivalentes</mat-label>
+        <input matInput [value]="puntosEquivalentes()" readonly tabindex="-1">
+        <mat-icon matPrefix color="primary">stars</mat-icon>
+    </mat-form-field>
+
+    <!-- Botón Agregar -->
+    <div class="form-actions">
+        <button mat-raised-button color="primary" type="submit"
+            [disabled]="formulario.invalid || !clienteSeleccionado()" class="btn-agregar">
+            <mat-icon>add</mat-icon>
+            Agregar Nota de Crédito
+        </button>
+
+        @if (formulario.dirty) {
+        <button mat-button type="button" (click)="limpiarFormulario()">
+            Limpiar
+        </button>
+        }
+    </div>
+</form>
