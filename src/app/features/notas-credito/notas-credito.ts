@@ -28,6 +28,7 @@ export class NotasCreditoComponent {
 
   onItemAgregado(item: NotaCreditoItem) {
     this.items = [...this.items, item];
+    this.cdr.detectChanges();
   }
 
   onItemEliminado(id: string) {
@@ -42,21 +43,20 @@ export class NotasCreditoComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // Si hay resultado, procesarlo (agregar nuevo o editar existente)
-        // Usar setTimeout para evitar NG0100 ExpressionChangedAfterItHasBeenCheckedError
-        setTimeout(() => {
-          if (item && item.id) {
-            // Es edición: reemplazar el item existente
-            this.items = this.items.map(i => i.id === item.id ? result : i);
-          } else {
-            // Es nuevo: agregar al array
-            this.items = [...this.items, result];
+        if (item?.id) {
+          // Es edición: actualizar el item existente
+          const index = this.items.findIndex(i => i.id === item.id);
+          if (index !== -1) {
+            this.items[index] = result;
+            // Forzar nueva referencia para detección de cambios
+            this.items = [...this.items];
           }
-          // Forzar detección de cambios para actualizar la UI
-          this.cdr.detectChanges();
-        }, 0);
+        } else {
+          // Es nuevo: agregar al array
+          this.items = [...this.items, result];
+        }
+        this.cdr.detectChanges();
       }
-      // Si result es null (cancelado), no hacer nada - el registro original se conserva
     });
   }
 
@@ -66,6 +66,6 @@ export class NotasCreditoComponent {
 
   // limpia el array de items
   onItemsCleared() {
-    this.items = [];
+    this.items.length = 0;
   }
 }

@@ -1,4 +1,4 @@
-import { Component, input, output, computed, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, input, output, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -52,22 +52,13 @@ export class NotaCreditoTablaComponent {
   }
 
   formatearMonto(monto: number | string): string {
-    const montoNumerico = typeof monto === 'string' ? parseFloat(monto) : monto;
-    return montoNumerico.toFixed(2);
+    return (typeof monto === 'string' ? parseFloat(monto) : monto).toFixed(2);
   }
 
   formatearFecha(fecha: string): string {
-    // Si la fecha ya está en formato dd/mm/yyyy, devolverla tal cual
-    if (/^\d{2}\/\d{2}\/\d{4}$/.test(fecha)) {
-      return fecha;
-    }
-
-    // Convertir de formato ISO (yyyy-mm-dd) a dd/mm/yyyy
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(fecha)) return fecha;
     const date = new Date(fecha);
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+    return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
   }
 
   eliminarItem(id: string) {

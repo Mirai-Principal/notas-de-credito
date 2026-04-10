@@ -36,7 +36,7 @@ import { NotaCreditoService } from '../../../../core/services/nota-credito.servi
 
 })
 export class NotaCreditoFormComponent {
-  
+
   private fb = inject(FormBuilder);
   private clienteService = inject(ClienteService);
   private notaCreditoService = inject(NotaCreditoService);
@@ -76,7 +76,7 @@ export class NotaCreditoFormComponent {
 
     const montoControl = this.formulario.get('montoFactura')!;
     const montoSignal = toSignal(montoControl.valueChanges.pipe(startWith(montoControl.value || 0)), { initialValue: montoControl.value || 0 });
-    
+
     //? calcular puntos equivalentes
     this.puntosEquivalentes = computed(() => {
       const cliente = this.clienteSeleccionado();
@@ -134,6 +134,7 @@ export class NotaCreditoFormComponent {
     return this.clienteService.obtenerNombreCorto(nombreCompleto);
   }
 
+
   agregarItem() {
     if (this.formulario.valid) {
       const valores = this.formulario.value;
@@ -176,14 +177,11 @@ export class NotaCreditoFormComponent {
 
   private formatearFecha(fecha: Date): string {
     if (!fecha) return '';
-    const year = fecha.getFullYear();
-    const month = String(fecha.getMonth() + 1).padStart(2, '0');
-    const day = String(fecha.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    return `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
   }
 
   today(): Date {
-    return new Date()
+    return new Date();
   }
 
   // Validador personalizado para máximo 2 decimales
@@ -193,23 +191,16 @@ export class NotaCreditoFormComponent {
       if (value === null || value === undefined || value === '') {
         return null;
       }
-      
+
       const stringValue = value.toString();
       const decimalIndex = stringValue.indexOf('.');
-      
-      if (decimalIndex !== -1 && stringValue.length - decimalIndex - 1 > 2) {
-        return { maxDecimals: true };
-      }
-      
-      return null;
+      return (decimalIndex !== -1 && stringValue.length - decimalIndex - 1 > 2) ? { maxDecimals: true } : null;
     };
   }
 
-  // Método para limitar decimales en tiempo real
   limitarDecimales(event: any) {
     const value = event.target.value;
     const decimalIndex = value.indexOf('.');
-    
     if (decimalIndex !== -1 && value.length - decimalIndex - 1 > 2) {
       const newValue = value.substring(0, decimalIndex + 3);
       event.target.value = newValue;
@@ -222,10 +213,10 @@ export class NotaCreditoFormComponent {
     this.esEdicion.set(true);
     this.datosOriginales.set({ ...item }); // Guardar copia de datos originales
     this.clienteSeleccionado.set(item.cliente);
-    
+
     // Si el número de factura empieza con "A", fue generado automáticamente, dejarlo vacío
     const nroFacturaValue = item.nroFactura.startsWith('A') ? '' : item.nroFactura;
-    
+
     this.formulario.patchValue({
       clienteBusqueda: item.cliente,
       nroFactura: nroFacturaValue,
