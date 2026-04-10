@@ -4,8 +4,9 @@
      gap: 16px;
      padding: 20px;
      background: #fafafa;
-     border-radius: 8px;
      margin-bottom: 24px;
+     max-height: 80vh;
+     overflow-y: auto;
  }
 
  .full-width {
@@ -58,4 +59,34 @@
      mat-icon {
          margin-right: 8px;
      }
+ }
+
+ /* Estilos para el scroll */
+ .form-container::-webkit-scrollbar {
+     width: 6px;
+ }
+
+ .form-container::-webkit-scrollbar-track {
+     background: #f1f1f1;
+     border-radius: 3px;
+ }
+
+ .form-container::-webkit-scrollbar-thumb {
+     background: #c1c1c1;
+     border-radius: 3px;
+ }
+
+ .form-container::-webkit-scrollbar-thumb:hover {
+     background: #a8a8a8;
+ }
+
+ /* Asegurar que el diálogo tenga espacio suficiente */
+ ::ng-deep .mat-mdc-dialog-container {
+     overflow: visible !important;
+     border-radius: 8px !important;
+ }
+
+ ::ng-deep .mat-mdc-dialog-surface {
+     overflow: visible !important;
+     border-radius: 8px !important;
  }

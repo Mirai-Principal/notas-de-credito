@@ -1,10 +1,13 @@
-import { Component, input, output, computed, inject } from '@angular/core';
+import { Component, input, output, computed, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
-import { NotaCreditoItem, NotaCreditoRequest } from '../../../../core/models/nota-credito.model';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog } from '@angular/material/dialog';
+import { Alert } from '../../../../shared/alert/alert';
+import { NotaCreditoItem, NotaCreditoRequest, NotaCreditoItemResponse } from '../../../../core/models/nota-credito.model';
 import { NotaCreditoService } from '../../../../core/services/nota-credito.service';
 import { ClienteService } from '../../../../core/services/cliente.service';
 
@@ -16,7 +19,8 @@ import { ClienteService } from '../../../../core/services/cliente.service';
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatCardModule
+    MatCardModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './nota-credito-tabla.html',
   styleUrl: './nota-credito-tabla.css'
@@ -27,6 +31,8 @@ export class NotaCreditoTablaComponent {
 
   private notaCreditoService = inject(NotaCreditoService);
   private clienteService = inject(ClienteService);
+  private dialog = inject(MatDialog);
+  private cdr = inject(ChangeDetectorRef);
 
   // Inputs
   items = input.required<NotaCreditoItem[]>();
@@ -34,21 +40,34 @@ export class NotaCreditoTablaComponent {
   // Outputs
   itemEliminado = output<string>();
   itemAEditar = output<NotaCreditoItem>();
-  enviarNotas = output<void>();
+  itemsCleared = output<void>();
 
-  // Computed
-  totalMonto = computed(() =>
-    this.items().reduce((sum, item) => sum + item.montoFactura, 0)
-  );
+  // Estado de carga
+  isLoading = false;
 
-  totalPuntos = computed(() =>
-    this.items().reduce((sum, item) => sum + item.puntosEquivalentes, 0)
-  );
-
-  displayedColumns = ['cliente', 'nroFactura', 'monto', 'fecha', 'puntos', 'acciones'];
+  displayedColumns = ['cliente', 'nroFactura', 'monto', 'fecha', 'descripcion', 'puntos', 'acciones'];
 
   obtenerNombreCorto(nombreCompleto: string): string {
     return this.clienteService.obtenerNombreCorto(nombreCompleto);
+  }
+
+  formatearMonto(monto: number | string): string {
+    const montoNumerico = typeof monto === 'string' ? parseFloat(monto) : monto;
+    return montoNumerico.toFixed(2);
+  }
+
+  formatearFecha(fecha: string): string {
+    // Si la fecha ya está en formato dd/mm/yyyy, devolverla tal cual
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(fecha)) {
+      return fecha;
+    }
+
+    // Convertir de formato ISO (yyyy-mm-dd) a dd/mm/yyyy
+    const date = new Date(fecha);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   }
 
   eliminarItem(id: string) {
@@ -56,19 +75,56 @@ export class NotaCreditoTablaComponent {
   }
 
   enviar() {
-    const request: NotaCreditoRequest = {
-      items: this.items(),
-      total: this.totalMonto(),
-      fechaCreacion: new Date().toISOString()
-    };
+    // Iniciar loader
+    this.isLoading = true;
 
-    this.notaCreditoService.enviarNotaCredito(request).subscribe({
+    // Transformar items al formato NotaCreditoItemResponse[]
+    const datosResponse: NotaCreditoItemResponse[] = this.items().map(item => ({
+      fechaFactura: this.formatearFecha(item.fechaFactura),
+      numFactura: item.nroFactura,
+      descripcion: item.descripcion,
+      numDocumento: item.cliente.Ruc,
+      montoFactura: item.montoFactura.toString(),
+      puntos: item.puntosEquivalentes.toString()
+    }));
+
+    this.notaCreditoService.enviarNotaCredito(datosResponse).subscribe({
       next: (response) => {
-        console.log('✅ Respuesta del servidor:', response);
-        this.enviarNotas.emit();
+        // Detener loader
+        this.isLoading = false;
+
+        // Forzar detección de cambios para actualizar la UI
+        this.cdr.detectChanges();
+
+        // Mostrar alert personalizado con la respuesta del servidor
+        this.dialog.open(Alert, {
+          data: {
+            title: 'Respuesta del Servidor',
+            message: JSON.stringify(response, null, 2),
+            type: 'success'
+          }
+        });
+
+        // Notificar al componente padre que limpie los items
+        this.itemsCleared.emit();
       },
       error: (error) => {
-        console.error('❌ Error al enviar:', error);
+        // Detener loader
+        this.isLoading = false;
+
+        // Forzar detección de cambios para actualizar la UI
+        this.cdr.detectChanges();
+
+        // Mostrar alert personalizado con el error
+        this.dialog.open(Alert, {
+          data: {
+            title: 'Error al Enviar',
+            message: JSON.stringify(error, null, 2),
+            type: 'error'
+          }
+        });
+
+        console.error('Error al enviar:', error);
       }
     });
   }
@@ -78,8 +134,6 @@ export class NotaCreditoTablaComponent {
     if (item) {
       // Emitir el item para que el componente padre lo cargue en el formulario
       this.itemAEditar.emit(item);
-      // Eliminar el item de la lista actual
-      this.itemEliminado.emit(id);
     }
   }
 }

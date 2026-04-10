@@ -15,10 +15,21 @@ export interface NotaCreditoItem {
     fechaFactura: string;
     puntosEquivalentes: number;
     cliente: Cliente;
+    descripcion: string;
 }
 
 export interface NotaCreditoRequest {
     items: NotaCreditoItem[];
     total: number;
     fechaCreacion: string;
+}
+
+
+export interface NotaCreditoItemResponse {
+    fechaFactura: string;  //formato: dd/mm/yyyy
+    numFactura: string;
+    descripcion: string;
+    numDocumento: string;   //ruc
+    montoFactura: string;
+    puntos: string;
 }

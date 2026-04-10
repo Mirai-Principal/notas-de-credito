@@ -1,0 +1,44 @@
+.alert-container {
+    min-width: 300px;
+    max-width: 500px;
+}
+
+.alert-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.alert-header h2 {
+    margin: 0;
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+.alert-message {
+    margin-bottom: 8px;
+}
+
+.alert-message p {
+    margin: 0;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+/* Tipos de alert */
+.alert-success {
+    color: #4caf50;
+}
+
+.alert-error {
+    color: #f44336;
+}
+
+.alert-warning {
+    color: #ff9800;
+}
+
+.alert-info {
+    color: #2196f3;
+}

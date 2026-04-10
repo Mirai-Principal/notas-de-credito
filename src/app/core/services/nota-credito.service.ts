@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { NotaCreditoRequest } from '../models/nota-credito.model';
+import { NotaCreditoRequest, NotaCreditoItemResponse } from '../models/nota-credito.model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,13 +16,13 @@ export class NotaCreditoService {
     return Math.round(monto) * FactorConversionPuntos;
   }
 
-  enviarNotaCredito(datos: NotaCreditoRequest): Observable<any> {
-    console.log('📤 Enviando nota de crédito:', JSON.stringify(datos, null, 2));
+  enviarNotaCredito(datos: NotaCreditoItemResponse[]): Observable<any> {
+    console.log(datos);
 
     // TODO: Reemplazar con llamada HTTP real
     // return this.http.post(`${this.API_URL}`, datos);
 
-    // Por ahora solo log
+    //? respuesta del server
     return new Observable(observer => {
       setTimeout(() => {
         observer.next({ success: true, message: 'Nota de crédito creada' });

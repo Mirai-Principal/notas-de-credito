@@ -52,6 +52,8 @@ export class NotaCreditoFormComponent {
   // Signals
   clienteSeleccionado = signal<Cliente | null>(null);
   clientesFiltrados!: Signal<Cliente[]>;
+  datosOriginales = signal<NotaCreditoItem | null>(null);
+  esEdicion = signal<boolean>(false);
 
   puntosEquivalentes!: Signal<number>;
 
@@ -63,7 +65,8 @@ export class NotaCreditoFormComponent {
         Validators.pattern(/^\d{3}-\d{3}-\d{9}$/) // Formato: 001-001-000123456
       ]],
       montoFactura: [0, [Validators.required, Validators.min(0.01), this.maxDecimalsValidator()]],
-      fechaFactura: [null, Validators.required]
+      fechaFactura: [null, Validators.required],
+      descripcion: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(200)]]
     });
 
     // Si hay datos del modal (edición), cargarlos
@@ -144,7 +147,8 @@ export class NotaCreditoFormComponent {
         nroFactura: valores.nroFactura,
         montoFactura: valores.montoFactura,
         fechaFactura: this.formatearFecha(valores.fechaFactura),
-        puntosEquivalentes: this.puntosEquivalentes()
+        puntosEquivalentes: this.puntosEquivalentes(),
+        descripcion: valores.descripcion
       };
 
       // Si es modal, cerrar con el resultado, sino emitir como antes
@@ -162,7 +166,8 @@ export class NotaCreditoFormComponent {
       clienteBusqueda: '',
       nroFactura: '',
       montoFactura: 0,
-      fechaFactura: null
+      fechaFactura: null,
+      descripcion: ''
     });
     this.clienteSeleccionado.set(null);
     this.formulario.markAsUntouched();
@@ -214,6 +219,8 @@ export class NotaCreditoFormComponent {
 
   // Método para cargar datos para edición
   cargarDatosParaEdicion(item: NotaCreditoItem) {
+    this.esEdicion.set(true);
+    this.datosOriginales.set({ ...item }); // Guardar copia de datos originales
     this.clienteSeleccionado.set(item.cliente);
     
     // Si el número de factura empieza con "A", fue generado automáticamente, dejarlo vacío
@@ -223,13 +230,15 @@ export class NotaCreditoFormComponent {
       clienteBusqueda: item.cliente,
       nroFactura: nroFacturaValue,
       montoFactura: item.montoFactura,
-      fechaFactura: new Date(item.fechaFactura)
+      fechaFactura: new Date(item.fechaFactura),
+      descripcion: item.descripcion
     });
   }
 
   cancelar() {
     if (this.dialogRef) {
-      this.dialogRef.close();
+      // Siempre devolver null al cancelar para conservar los datos originales
+      this.dialogRef.close(null);
     }
   }
 }

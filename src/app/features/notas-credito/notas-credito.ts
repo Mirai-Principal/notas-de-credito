@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,7 +16,6 @@ import { NotaCreditoItem } from '../../core/models/nota-credito.model';
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    NotaCreditoFormComponent,
     NotaCreditoTablaComponent
   ],
   templateUrl: './notas-credito.html',
@@ -24,6 +23,7 @@ import { NotaCreditoItem } from '../../core/models/nota-credito.model';
 })
 export class NotasCreditoComponent {
   private dialog = inject(MatDialog);
+  private cdr = inject(ChangeDetectorRef);
   items: NotaCreditoItem[] = [];
 
   onItemAgregado(item: NotaCreditoItem) {
@@ -42,8 +42,21 @@ export class NotasCreditoComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.items = [...this.items, result];
+        // Si hay resultado, procesarlo (agregar nuevo o editar existente)
+        // Usar setTimeout para evitar NG0100 ExpressionChangedAfterItHasBeenCheckedError
+        setTimeout(() => {
+          if (item && item.id) {
+            // Es edición: reemplazar el item existente
+            this.items = this.items.map(i => i.id === item.id ? result : i);
+          } else {
+            // Es nuevo: agregar al array
+            this.items = [...this.items, result];
+          }
+          // Forzar detección de cambios para actualizar la UI
+          this.cdr.detectChanges();
+        }, 0);
       }
+      // Si result es null (cancelado), no hacer nada - el registro original se conserva
     });
   }
 
@@ -51,7 +64,8 @@ export class NotasCreditoComponent {
     this.abrirModal(item);
   }
 
-  onEnviarNotas() {
-    console.log('🚀 Items a enviar:', this.items);
+  // limpia el array de items
+  onItemsCleared() {
+    this.items = [];
   }
 }

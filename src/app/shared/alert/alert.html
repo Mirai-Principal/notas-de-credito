@@ -1,0 +1,14 @@
+<mat-dialog-content class="alert-container">
+    <div class="alert-header">
+        <mat-icon [class]="alertClass">{{ icon }}</mat-icon>
+        <h2 matDialogTitle>{{ title }}</h2>
+    </div>
+
+    <div class="alert-message">
+        <p>{{ message }}</p>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button (click)="close()">Aceptar</button>
+</mat-dialog-actions>

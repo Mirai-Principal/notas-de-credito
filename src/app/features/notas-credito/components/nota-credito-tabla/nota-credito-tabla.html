@@ -1,6 +1,13 @@
 @if (items().length > 0) {
 <div class="tabla-container">
     <h3>Lista de Notas de Crédito</h3>
+    <!-- Resumen -->
+    <div class="resumen">
+        <div class="resumen-item">
+            <span class="label">Total Items:</span>
+            <span class="value">{{ items().length }}</span>
+        </div>
+    </div>
 
     <!-- Wrapper con scroll -->
     <div class="table-wrapper">
@@ -21,13 +28,21 @@
             <ng-container matColumnDef="monto">
                 <th mat-header-cell *matHeaderCellDef>Monto</th>
                 <td mat-cell *matCellDef="let item" class="monto-cell">
-                    ${{ item.montoFactura.toFixed(2) }}
+                    ${{ formatearMonto(item.montoFactura) }}
                 </td>
             </ng-container>
 
             <ng-container matColumnDef="fecha">
                 <th mat-header-cell *matHeaderCellDef>Fecha</th>
                 <td mat-cell *matCellDef="let item">{{ item.fechaFactura }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="descripcion">
+                <th mat-header-cell *matHeaderCellDef>Descripción</th>
+                <td mat-cell *matCellDef="let item" class="descripcion-cell">
+                    <span [title]="item.descripcion">{{ item.descripcion.length > 8 ? item.descripcion.substring(0, 8) +
+                        '...' : item.descripcion }}</span>
+                </td>
             </ng-container>
 
             <ng-container matColumnDef="puntos">
@@ -58,37 +73,25 @@
         </table>
     </div>
 
-    <!-- Resumen -->
-    <div class="resumen">
-        <div class="resumen-item">
-            <span class="label">Total Items:</span>
-            <span class="value">{{ items().length }}</span>
-        </div>
-        <div class="resumen-item">
-            <span class="label">Total Monto:</span>
-            <span class="value monto">${{ totalMonto().toFixed(2) }}</span>
-        </div>
-        <div class="resumen-item destacado">
-            <span class="label">Total Puntos:</span>
-            <span class="value puntos">
-                <mat-icon>stars</mat-icon>
-                {{ totalPuntos() }}
-            </span>
-        </div>
-    </div>
-
     <!-- Botón Enviar -->
     <div class="acciones-tabla">
+        @if (isLoading) {
+        <div class="loader-container">
+            <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
+            <span class="loader-text">Enviando...</span>
+        </div>
+        } @else {
         <button mat-raised-button color="accent" (click)="enviar()" class="btn-enviar">
             <mat-icon>send</mat-icon>
             Enviar Notas de Crédito
         </button>
+        }
     </div>
 </div>
 } @else {
 <div class="empty-state">
     <mat-icon>inbox</mat-icon>
     <p>No hay notas de crédito agregadas</p>
-    <p class="hint">Completa el formulario y haz clic en "Agregar"</p>
+    <p class="hint">Haz clic en "Agregar" y completa el formulario</p>
 </div>
 }
