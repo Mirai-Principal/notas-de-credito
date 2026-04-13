@@ -13,8 +13,7 @@
             @for (cliente of clientesFiltrados(); track cliente.Ruc) {
             <mat-option [value]="cliente">
                 <div class="cliente-option">
-                    <span class="cliente-nombre">{{ obtenerNombreCorto(cliente.Nombre) }}</span>
-                    <span class="cliente-ruc">{{ cliente.Ruc }}</span>
+                    <span class="cliente-nombre">{{ cliente.name }}</span>
                 </div>
             </mat-option>
             }
@@ -24,7 +23,7 @@
     @if (clienteSeleccionado()) {
     <div class="cliente-seleccionado">
         <mat-icon>check_circle</mat-icon>
-        <span>{{ obtenerNombreCorto(clienteSeleccionado()!.Nombre) }} - {{ clienteSeleccionado()!.Ruc }}</span>
+        <span>{{ clienteSeleccionado()!.Nombre }} - {{ clienteSeleccionado()!.Ruc }}</span>
     </div>
     }
 
@@ -41,8 +40,8 @@
     <!-- Monto Factura -->
     <mat-form-field appearance="outline" class="full-width">
         <mat-label>Monto Factura</mat-label>
-        <input matInput type="number" formControlName="montoFactura" placeholder="0.00" step="0.01" min="0"
-            max="999999999.99" (input)="limitarDecimales($event)">
+        <input matInput type="number" formControlName="montoFactura" placeholder="0" step="1" min="1"
+            max="999999999" (input)="prevenirDecimales($event)">
         <span matPrefix style="margin: 0 4px 0 4px;">$</span>
         @if (formulario.get('montoFactura')?.hasError('required') && formulario.get('montoFactura')?.touched) {
         <mat-error>El monto es requerido</mat-error>
@@ -51,10 +50,7 @@
         <mat-error>El monto debe ser mayor a 0</mat-error>
         }
         @if (formulario.get('montoFactura')?.hasError('max') && formulario.get('montoFactura')?.touched) {
-        <mat-error>El monto no puede ser mayor a 999999999.99</mat-error>
-        }
-        @if (formulario.get('montoFactura')?.hasError('maxDecimals') && formulario.get('montoFactura')?.touched) {
-        <mat-error>Máximo 2 decimales permitidos</mat-error>
+        <mat-error>El monto no puede ser mayor a 999999999</mat-error>
         }
     </mat-form-field>
 

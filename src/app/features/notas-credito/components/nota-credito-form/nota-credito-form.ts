@@ -64,7 +64,7 @@ export class NotaCreditoFormComponent {
       nroFactura: ['', [
         Validators.pattern(/^\d{3}-\d{3}-\d{9}$/) // Formato: 001-001-000123456
       ]],
-      montoFactura: [0, [Validators.required, Validators.min(0.01), this.maxDecimalsValidator()]],
+      montoFactura: [0, [Validators.required, Validators.min(1), Validators.pattern(/^\d+$/)]],
       fechaFactura: [null, Validators.required],
       descripcion: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(200)]]
     });
@@ -134,7 +134,6 @@ export class NotaCreditoFormComponent {
     return this.clienteService.obtenerNombreCorto(nombreCompleto);
   }
 
-
   agregarItem() {
     if (this.formulario.valid) {
       const valores = this.formulario.value;
@@ -143,7 +142,7 @@ export class NotaCreditoFormComponent {
       valores.nroFactura = valores.nroFactura || this.clienteService.generarNumeroFactura(valores.clienteBusqueda.Ruc, valores.montoFactura);
 
       const nuevoItem: NotaCreditoItem = {
-        id: this.dialogData?.id || crypto.randomUUID(), // Usar ID existente si es edición
+        id: this.dialogData?.id || this.generarIdUnico(), // Usar ID existente si es edición
         cliente: this.clienteSeleccionado()!,
         nroFactura: valores.nroFactura,
         montoFactura: valores.montoFactura,
@@ -184,8 +183,8 @@ export class NotaCreditoFormComponent {
     return new Date();
   }
 
-  // Validador personalizado para máximo 2 decimales
-  maxDecimalsValidator() {
+  // Validador para solo números enteros
+  soloEnterosValidator() {
     return (control: any) => {
       const value = control.value;
       if (value === null || value === undefined || value === '') {
@@ -193,19 +192,18 @@ export class NotaCreditoFormComponent {
       }
 
       const stringValue = value.toString();
-      const decimalIndex = stringValue.indexOf('.');
-      return (decimalIndex !== -1 && stringValue.length - decimalIndex - 1 > 2) ? { maxDecimals: true } : null;
+      // No permitir decimales ni números negativos
+      return /^\d+$/.test(stringValue) ? null : { soloEnteros: true };
     };
   }
 
-  limitarDecimales(event: any) {
+  // Prevenir entrada de decimales
+  prevenirDecimales(event: any) {
     const value = event.target.value;
-    const decimalIndex = value.indexOf('.');
-    if (decimalIndex !== -1 && value.length - decimalIndex - 1 > 2) {
-      const newValue = value.substring(0, decimalIndex + 3);
-      event.target.value = newValue;
-      this.formulario.get('montoFactura')?.setValue(newValue, { emitEvent: false });
-    }
+    // Eliminar cualquier punto o decimal
+    const soloEnteros = value.replace(/\D/g, '').replace(/\./g, '');
+    event.target.value = soloEnteros;
+    this.formulario.get('montoFactura')?.setValue(soloEnteros, { emitEvent: false });
   }
 
   // Método para cargar datos para edición
@@ -236,5 +234,26 @@ export class NotaCreditoFormComponent {
       // Siempre devolver null al cancelar para conservar los datos originales
       this.dialogRef.close(null);
     }
+  }
+
+  // Generar ID único usando RUC + fecha + hora + milisegundos (funciona sin internet)
+  private generarIdUnico(): string {
+    const cliente = this.clienteSeleccionado();
+    if (!cliente) {
+      // Fallback si no hay cliente seleccionado
+      return `NC-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    }
+    
+    const ruc = cliente.Ruc.replace(/[^0-9]/g, ''); // Limpiar RUC para solo números
+    const ahora = new Date();
+    const fecha = ahora.getFullYear().toString() + 
+                  (ahora.getMonth() + 1).toString().padStart(2, '0') + 
+                  ahora.getDate().toString().padStart(2, '0');
+    const hora = ahora.getHours().toString().padStart(2, '0') + 
+                 ahora.getMinutes().toString().padStart(2, '0') + 
+                 ahora.getSeconds().toString().padStart(2, '0');
+    const milisegundos = ahora.getMilliseconds().toString().padStart(3, '0');
+    
+    return `NC-${ruc}-${fecha}-${hora}-${milisegundos}`;
   }
 }
