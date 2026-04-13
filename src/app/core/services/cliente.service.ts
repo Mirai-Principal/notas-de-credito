@@ -9,7 +9,7 @@ import { Cliente } from '../models/nota-credito.model';
 })
 export class ClienteService {
   private http = inject(HttpClient);
-  private readonly API_URL = enviroment.API_URL;
+  private readonly API_URL = enviroment.API_URL_SOCIO_NEGOCIO;
 
   buscarClientes(termino: string): Observable<Cliente[]> {
     return this.http.get<Cliente[]>(`${this.API_URL}/${termino}`).pipe(

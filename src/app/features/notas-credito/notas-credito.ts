@@ -66,6 +66,11 @@ export class NotasCreditoComponent {
 
   // limpia el array de items
   onItemsCleared() {
-    this.items.length = 0;
+    this.items = [];
+  }
+
+  // elimina items exitosos del array original
+  onItemsExitososEliminados(nroFacturas: string[]) {
+    this.items = this.items.filter(item => !nroFacturas.includes(item.nroFactura));
   }
 }

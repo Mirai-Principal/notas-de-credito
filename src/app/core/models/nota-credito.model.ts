@@ -16,6 +16,8 @@ export interface NotaCreditoItem {
     puntosEquivalentes: number;
     cliente: Cliente;
     descripcion: string;
+    estado?: 'pendiente' | 'exito' | 'error';
+    mensajeError?: string;
 }
 
 export interface NotaCreditoRequest {
@@ -33,3 +35,4 @@ export interface NotaCreditoItemResponse {
     montoFactura: string;
     puntos: string;
 }
+

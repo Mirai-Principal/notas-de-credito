@@ -12,7 +12,8 @@
             </div>
 
             <app-nota-credito-tabla [items]="items" (itemEliminado)="onItemEliminado($event)"
-                (itemAEditar)="onItemAEditar($event)" (itemsCleared)="onItemsCleared()" />
+                (itemAEditar)="onItemAEditar($event)" (itemsCleared)="onItemsCleared()" 
+                (itemsExitososEliminados)="onItemsExitososEliminados($event)" />
         </mat-card-content>
     </mat-card>
 </div>

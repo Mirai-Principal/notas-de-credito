@@ -221,9 +221,14 @@ export class NotaCreditoFormComponent {
       clienteBusqueda: item.cliente,
       nroFactura: nroFacturaValue,
       montoFactura: item.montoFactura,
-      fechaFactura: new Date(item.fechaFactura),
+      fechaFactura: this.parseDateToLocal(item.fechaFactura),
       descripcion: item.descripcion
     });
+  }
+
+  parseDateToLocal(dateString: string): Date {
+    const dateParts = dateString.split('-');
+    return new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]));
   }
 
   cancelar() {
