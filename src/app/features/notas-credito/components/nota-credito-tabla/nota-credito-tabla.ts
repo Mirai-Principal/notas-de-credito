@@ -7,6 +7,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { InfoButtonComponent } from '../../../../shared/info-button/info-button';
 import { Alert } from '../../../../shared/alert/alert';
 import { NotaCreditoItem, NotaCreditoRequest, NotaCreditoItemResponse } from '../../../../core/models/nota-credito.model';
 import { NotaCreditoService } from '../../../../core/services/nota-credito.service';
@@ -22,7 +23,8 @@ import { ClienteService } from '../../../../core/services/cliente.service';
     MatIconModule,
     MatCardModule,
     MatProgressSpinnerModule,
-    MatTooltipModule
+    MatTooltipModule,
+    InfoButtonComponent
   ],
   templateUrl: './nota-credito-tabla.html',
   styleUrl: './nota-credito-tabla.css'

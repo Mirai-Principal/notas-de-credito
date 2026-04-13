@@ -1,0 +1,9 @@
+<button mat-icon-button 
+        [color]="color()" 
+        (click)="onClick.emit()" 
+        [aria-label]="ariaLabel()" 
+        [class]="cssClass()"
+        [matTooltip]="tooltipText()" 
+        [matTooltipPosition]="tooltipPosition()">
+    <mat-icon>{{ icon() }}</mat-icon>
+</button>
