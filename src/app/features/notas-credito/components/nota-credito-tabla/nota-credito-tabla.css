@@ -58,13 +58,6 @@ table {
 /* Estilos para columna de estado */
 .estado-cell {
     text-align: center;
-    
-    .error-icon {
-        color: #f44336;
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
-    }
 }
 
 .resumen {

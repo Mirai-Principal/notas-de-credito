@@ -158,7 +158,7 @@ export class NotaCreditoTablaComponent implements OnChanges {
         // Mostrar resumen
         const exitosos = itemsAEliminar.length;
         const errores = itemsFiltrados.filter(item => item.estado === 'error').length;
-        let mensaje = `Proceso completado:\n- ${exitosos} enviados exitosamente\n- ${errores} con errores`;
+        let mensaje = `Proceso completado:\n✅ ${exitosos} enviados exitosamente\n❌ ${errores} con errores`;
         
         if (errores > 0) {
           mensaje += '\n\nRevisa los íconos de error en la tabla para ver los detalles.';
@@ -182,8 +182,8 @@ export class NotaCreditoTablaComponent implements OnChanges {
         // Mostrar alert personalizado con el error
         this.dialog.open(Alert, {
           data: {
-            title: 'Error al Enviar',
-            message: JSON.stringify(error, null, 2),
+            title: 'Error al enviar',
+            message: "Ocurrio un error al enviar las notas de crédito",
             type: 'error'
           }
         });
