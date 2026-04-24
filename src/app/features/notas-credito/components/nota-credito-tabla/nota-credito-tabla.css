@@ -94,30 +94,9 @@ table {
     margin-top: 20px;
 }
 
-.btn-enviar {
-    mat-icon {
-        margin-right: 8px;
-    }
-}
-
-.loader-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 8px 16px;
-    background: #e3f2fd;
-    border-radius: 4px;
-    color: #1976d2;
-    font-weight: 500;
-}
-
 .botones-accion {
     display: flex;
     gap: 16px;
-}
-
-.loader-text {
-    font-size: 14px;
 }
 
 .empty-state {

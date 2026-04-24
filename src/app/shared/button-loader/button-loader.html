@@ -1,0 +1,16 @@
+@if (isLoading()) {
+<div class="loader-container">
+    <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
+    <span class="loader-text">Enviando...</span>
+</div>
+} @else {
+<button 
+    mat-raised-button 
+    [color]="color()" 
+    (click)="onClick()" 
+    [disabled]="disabled()"
+    class="btn-enviar">
+    <mat-icon>{{ icon() }}</mat-icon>
+    {{ text() }}
+</button>
+}

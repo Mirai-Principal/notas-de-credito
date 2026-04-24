@@ -1,0 +1,22 @@
+.loader-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: var(--mat-accent-500);
+  color: white;
+  border-radius: 4px;
+  min-height: 40px;
+}
+
+.loader-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn-enviar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

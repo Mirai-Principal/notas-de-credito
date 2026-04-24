@@ -96,23 +96,19 @@
 
     <!-- Botones de acción -->
     <div class="acciones-tabla">
-        @if (isLoading) {
-        <div class="loader-container">
-            <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
-            <span class="loader-text">Enviando...</span>
-        </div>
-        } @else {
         <div class="botones-accion">
-            <button mat-raised-button color="accent" (click)="enviar()" class="btn-enviar">
-                <mat-icon>send</mat-icon>
-                Enviar Notas de Crédito
-            </button>
+            <app-button-loader 
+                [isLoading]="isLoading" 
+                text="Enviar Notas de Crédito"
+                icon="send"
+                color="accent"
+                (buttonClick?)="enviar()">
+            </app-button-loader>
             <button mat-raised-button color="warn" (click)="limpiarTodos()" class="btn-limpiar">
                 <mat-icon>clear_all</mat-icon>
                 Limpiar Todos
             </button>
         </div>
-        }
     </div>
 </div>
 } @else {
